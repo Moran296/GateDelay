@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="enter" android:enabled="true" android:icon="@drawable/ic_gate"
+        android:shortcutShortLabel="@string/shortcut_enter">
+        <intent android:action="app.gatedelay.shortcut.ENTER"
+            android:targetPackage="app.gatedelay" android:targetClass="app.gatedelay.android.ShortcutActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="exit" android:enabled="true" android:icon="@drawable/ic_gate"
+        android:shortcutShortLabel="@string/shortcut_exit">
+        <intent android:action="app.gatedelay.shortcut.EXIT"
+            android:targetPackage="app.gatedelay" android:targetClass="app.gatedelay.android.ShortcutActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="main" android:enabled="true" android:icon="@drawable/ic_gate"
+        android:shortcutShortLabel="@string/shortcut_main">
+        <intent android:action="app.gatedelay.shortcut.MAIN"
+            android:targetPackage="app.gatedelay" android:targetClass="app.gatedelay.android.ShortcutActivity" />
+    </shortcut>
+</shortcuts>
