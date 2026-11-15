@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+
+- **Retries when there's no connection.** If a gate command fails because the phone has no internet, for example while it reconnects to cellular between gates, the app retries every 2 seconds for up to 60 seconds. The screen, widget and notification show "retrying". PalGate errors such as "not authorized" are still not retried.
+- Releases are now signed with the same key as the first builds that were shared directly, so they install as an update without unpairing.
+
 ## 1.0.0
 
 First release.

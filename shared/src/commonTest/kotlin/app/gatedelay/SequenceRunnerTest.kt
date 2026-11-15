@@ -41,8 +41,15 @@ class SequenceRunnerTest {
     """.trimIndent()
 
     /** Records opened gates; `failDevice` answers with PalGate's "not authorized" error. */
-    private class Fixture(devicesJson: String, scheduler: TestCoroutineScheduler, failDevice: String? = null) {
+    private class Fixture(
+        devicesJson: String,
+        scheduler: TestCoroutineScheduler,
+        failDevice: String? = null,
+        /** The first N open-gate requests fail as if the phone had no connection. */
+        var offlineOpens: Int = 0,
+    ) {
         val opened = mutableListOf<String>()
+        var openAttempts = 0
         val tokens = mutableListOf<String?>()
         val engine = MockEngine.create {
           dispatcher = StandardTestDispatcher(scheduler)
@@ -53,6 +60,11 @@ class SequenceRunnerTest {
                 path.endsWith("/devices") -> respond(devicesJson, HttpStatusCode.OK, headersOf("Content-Type", "application/json"))
                 path.contains("/open-gate") -> {
                     val id = path.substringAfter("/device/").substringBefore("/")
+                    openAttempts++
+                    if (offlineOpens > 0) {
+                        offlineOpens--
+                        throw IllegalStateException("Unable to resolve host")
+                    }
                     if (id == failDevice) {
                         respond("""{"err":"not authorized","msg":"Secondary device not authorized!","status":"failed"}""", HttpStatusCode.BadRequest)
                     } else {
@@ -181,6 +193,58 @@ class SequenceRunnerTest {
         assertEquals(f.repo.config.value, again.config.value)
         again.removeAccount("972501234567")
         assertTrue(again.config.value.gates.isEmpty())
+    }
+
+    @Test
+    fun noConnectionIsRetriedEveryTwoSecondsUntilItWorks() = runTest {
+        val f = Fixture(devicesJson, testScheduler)
+        f.setUpGates()
+        val runner = SequenceRunner(f.repo, this)
+        f.offlineOpens = 5 // phone reconnecting to cellular for ~10 s
+
+        runner.start(SequenceKind.ENTER)
+        waitFor { f.openAttempts == 1 }
+        assertTrue(f.opened.isEmpty())
+        advanceTimeBy(2_001); runCurrent()
+        assertEquals(2, f.openAttempts, "retry after 2 s")
+        assertEquals(1, runner.state.value.retry)
+        assertTrue(runner.state.value.summary().contains("retrying"), runner.state.value.summary())
+
+        advanceTimeBy(8_000); runCurrent()
+        waitFor { f.opened.size == 1 }
+        assertEquals(6, f.openAttempts)
+        assertEquals(null, runner.state.value.retry)
+        advanceUntilIdle()
+        assertTrue(runner.state.value.finishedOk, runner.state.value.toString())
+        assertEquals(listOf("MAIN1:1", "INOUT:1"), f.opened)
+    }
+
+    @Test
+    fun noConnectionForTooLongFailsAndSkipsSecondGate() = runTest {
+        val f = Fixture(devicesJson, testScheduler)
+        f.setUpGates()
+        val runner = SequenceRunner(f.repo, this)
+        f.offlineOpens = 1_000
+
+        runner.start(SequenceKind.EXIT)
+        advanceUntilIdle()
+        val s = runner.state.value
+        assertFalse(s.running)
+        assertTrue(f.opened.isEmpty())
+        assertTrue(f.openAttempts in 25..32, "about 60 s / 2 s attempts, got ${f.openAttempts}")
+        assertEquals(StepStatus.FAILED, s.steps[0].status)
+        assertEquals(StepStatus.SKIPPED, s.steps[1].status)
+        assertTrue(s.error!!.contains("No connection"), s.error)
+    }
+
+    @Test
+    fun palgateErrorIsNotRetried() = runTest {
+        val f = Fixture(devicesJson, testScheduler, failDevice = "MAIN1")
+        f.setUpGates()
+        val runner = SequenceRunner(f.repo, this)
+        runner.start(SequenceKind.ENTER)
+        advanceUntilIdle()
+        assertEquals(1, f.openAttempts)
     }
 
     /** Runs everything due at the current virtual time, then checks [cond]. */

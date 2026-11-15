@@ -51,6 +51,7 @@ The gates, their order and the waiting times are all configurable.
 - **Home-screen widgets.** A blue **ENTER** widget and an orange **EXIT** widget. Tapping one runs the sequence without opening the app.
 - **App shortcuts.** Long-press the app icon for ENTER / EXIT / Open Main gate.
 - **Runs in the background.** The sequence finishes even if you lock the screen or switch apps. A notification shows progress and has a **Cancel** button.
+- **Survives bad reception.** If the phone has no connection, for example while it reconnects to cellular between gates, each gate is retried every 2 s for up to 60 s.
 - **Safe by default.** If the first gate fails to open, the second gate is **not** opened.
 - **Several PalGate accounts.** Each gate remembers which account it opens through.
 - **No server.** The app talks to PalGate directly. Your token is stored encrypted on the phone (Android Keystore).

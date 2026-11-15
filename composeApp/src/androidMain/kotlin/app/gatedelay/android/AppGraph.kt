@@ -95,6 +95,7 @@ private fun widgetStatus(run: RunState, kind: SequenceKind): String {
     val opening = run.steps.firstOrNull { it.status == StepStatus.OPENING }
     return when {
         run.running && run.secondsLeft != null -> "${run.steps.getOrNull(1)?.role?.title} in ${run.secondsLeft}s"
+        run.running && run.retry != null -> "No signal, retrying ${opening?.role?.title ?: ""}…"
         run.running -> "Opening ${opening?.role?.title ?: ""}…"
         run.steps.isEmpty() && run.error != null -> "Set up in app"
         run.error != null -> "Failed - open app"

@@ -28,6 +28,8 @@ data class RunState(
     val secondsLeft: Int? = null,
     val running: Boolean = false,
     val error: String? = null,
+    /** Set while a gate is being retried because there is no connection (retry number, 1-based). */
+    val retry: Int? = null,
 ) {
     val finishedOk get() = !running && kind != null && error == null && steps.all { it.status == StepStatus.DONE }
 
@@ -35,6 +37,7 @@ data class RunState(
     fun summary(): String = when {
         kind == null -> "Ready"
         running && secondsLeft != null -> "${kind.title}: opening ${steps.getOrNull(1)?.role?.title} in ${secondsLeft}s"
+        running && retry != null -> "${kind.title}: no connection, retrying ${steps.firstOrNull { it.status == StepStatus.OPENING }?.role?.title ?: ""} ($retry)…"
         running -> "${kind.title}: opening ${steps.firstOrNull { it.status == StepStatus.OPENING }?.role?.title ?: "…"}"
         error != null -> "${kind.title} failed: $error"
         steps.any { it.status == StepStatus.SKIPPED } -> "${kind.title} cancelled"
@@ -59,11 +62,15 @@ interface GateController {
 /**
  * Runs ENTER/EXIT sequences: open first gate -> countdown -> open second gate.
  * If the first gate fails, the second one is NOT opened.
+ *
+ * Connection errors (e.g. the phone is re-attaching to the cellular network between gates) are retried
+ * every [retryDelayMs] for up to [retryWindowMs] per gate. PalGate API errors are not retried.
  */
 class SequenceRunner(
     private val repo: GateRepository,
     private val scope: CoroutineScope,
-    private val retryDelayMs: Long = 1_000,
+    private val retryDelayMs: Long = 2_000,
+    private val retryWindowMs: Long = 60_000,
 ) {
     private val _state = MutableStateFlow(RunState())
     val state: StateFlow<RunState> = _state.asStateFlow()
@@ -137,7 +144,8 @@ class SequenceRunner(
 
     private suspend fun openStep(index: Int, ref: GateRef): Boolean {
         setStep(index, StepStatus.OPENING)
-        val error = openWithRetry(ref)
+        val error = openWithRetry(ref) { n -> _state.update { it.copy(retry = n) } }
+        _state.update { it.copy(retry = null) }
         return if (error == null) {
             setStep(index, StepStatus.DONE)
             true
@@ -153,22 +161,41 @@ class SequenceRunner(
         }
     }
 
-    /** @return null on success, else an error message. Network errors are retried once; API errors are not. */
-    private suspend fun openWithRetry(ref: GateRef): String? {
-        repeat(2) { attempt ->
+    /**
+     * @return null on success, else an error message.
+     * Connection errors are retried every [retryDelayMs] until [retryWindowMs] has passed; API errors are not retried.
+     */
+    private suspend fun openWithRetry(ref: GateRef, onRetry: (Int) -> Unit = {}): String? {
+        var lastError: Exception? = null
+        val outcome = withTimeoutOrNull(retryWindowMs) { retryLoop(ref, onRetry) { lastError = it } }
+        return when (outcome) {
+            OPENED -> null
+            null -> "No connection (kept trying for ${retryWindowMs / 1000}s): ${lastError?.let { it.message ?: it::class.simpleName } ?: "timeout"}"
+            else -> outcome
+        }
+    }
+
+    /** Loops until the gate opens ([OPENED]) or PalGate returns an error (its message). */
+    private suspend fun retryLoop(ref: GateRef, onRetry: (Int) -> Unit, onNetworkError: (Exception) -> Unit): String {
+        var retries = 0
+        while (true) {
             try {
                 repo.openGate(ref)
-                return null
+                return OPENED
             } catch (e: CancellationException) {
                 throw e
             } catch (e: PalgateException) {
                 return e.message ?: "PalGate error"
             } catch (e: Exception) {
-                if (attempt == 1) return "Network error: ${e.message ?: e::class.simpleName}"
+                onNetworkError(e)
                 delay(retryDelayMs)
+                onRetry(++retries)
             }
         }
-        return "Unknown error"
+    }
+
+    private companion object {
+        const val OPENED = " opened"
     }
 
     private fun setStep(index: Int, status: StepStatus) = _state.update { s ->
