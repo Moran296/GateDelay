@@ -11,3 +11,4 @@ captures/
 keystore.properties
 __pycache__/
 *.pyc
+dist/

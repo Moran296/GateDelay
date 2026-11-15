@@ -1,3 +1,4 @@
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -40,12 +41,26 @@ android {
         applicationId = "app.gatedelay"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        // Single source of truth: gatedelay.versionName / gatedelay.versionCode in gradle.properties.
+        versionCode = providers.gradleProperty("gatedelay.versionCode").get().toInt()
+        versionName = providers.gradleProperty("gatedelay.versionName").get()
+    }
+    // Release signing: keystore.properties (git-ignored) with storeFile, storePassword, keyAlias, keyPassword.
+    // Without it, assembleRelease produces an unsigned APK.
+    val keystoreProps = rootProject.file("keystore.properties").takeIf { it.exists() }
+        ?.let { f -> Properties().apply { f.inputStream().use(::load) } }
+    signingConfigs {
+        if (keystoreProps != null) create("release") {
+            storeFile = file(keystoreProps.getProperty("storeFile"))
+            storePassword = keystoreProps.getProperty("storePassword")
+            keyAlias = keystoreProps.getProperty("keyAlias")
+            keyPassword = keystoreProps.getProperty("keyPassword")
+        }
     }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            if (keystoreProps != null) signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

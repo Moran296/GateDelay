@@ -154,6 +154,7 @@ fun SettingsScreen(deps: AppDeps, onBack: () -> Unit, onLink: () -> Unit) {
                 "(gate admin: Gate Settings → Manager Options → Users → Linked Device).",
             style = MaterialTheme.typography.bodySmall,
         )
+        Text("GateDelay v${deps.platform.appVersion}", style = MaterialTheme.typography.bodySmall)
     }
 
     pickerFor?.let { role ->

@@ -65,9 +65,19 @@ The gates, their order and the waiting times are all configurable.
 
 ## Installing the app
 
-There's no Play Store listing. You either build the app yourself or get the APK from someone who built it.
+There's no Play Store listing. Download the ready-made APK, or build the app yourself.
 
-### Option A: build with Android Studio (easiest)
+### Download the APK (easiest)
+
+1. On your phone, open the **[latest release](https://github.com/Moran296/GateDelay/releases/latest)** and download `GateDelay-X.Y.Z.apk` under *Assets*.
+2. Open the downloaded file. Android asks you to allow *Install unknown apps* for your browser or file manager. Allow it, then tap **Install**.
+3. Continue with [First-time setup](#first-time-setup).
+
+**Updating:** download the newer APK and install it over the old one. Your accounts and settings are kept. The installed version is shown at the bottom of **Settings**, and [CHANGELOG.md](CHANGELOG.md) lists what changed.
+
+> Releases are signed with the project's release key. A copy you built yourself (Option A/B) is signed with a different key, so Android won't install a release over it, or the other way round. To switch, uninstall first. Uninstalling deletes the stored token, so you'd have to link again: first remove the old GateDelay entry in PalGate → *Device Linking* to free the slot.
+
+### Option A: build with Android Studio
 
 1. Install [Android Studio](https://developer.android.com/studio). It includes the Android SDK and Java.
 2. Get the code:
@@ -90,10 +100,7 @@ $env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
 
 ### Sharing the app with neighbours / family
 
-1. In Android Studio: **Build → Generate Signed App Bundle / APK → APK**, then create a *keystore*. **Keep the keystore file and its passwords**, because every future update must be signed with the same key.
-2. Send the resulting `.apk` file (WhatsApp, e-mail, Drive…).
-3. On their phone, open the file. Android asks them to allow *Install unknown apps* for the app they opened it from. Then tap **Install**.
-4. Each person then follows [First-time setup](#first-time-setup) with **their own** PalGate account.
+Send them the [latest release](https://github.com/Moran296/GateDelay/releases/latest) link (or the APK file itself). Each person installs it and follows [First-time setup](#first-time-setup) with **their own** PalGate account.
 
 > Alternatively, Google Play Console's **Internal testing** track lets up to 100 testers install it from the Play Store by e-mail invite. This needs a one-time $25 developer account.
 
@@ -237,6 +244,20 @@ PLAN.md                 Design notes, decisions and roadmap
 ./gradlew :composeApp:assembleDebug    # Android debug APK
 ./gradlew :composeApp:lintDebug        # Android lint
 ```
+
+**Versioning & releases.** The version is set in one place, `gradle.properties` (`gatedelay.versionName`, [semver](https://semver.org), plus `gatedelay.versionCode`, which must go up by 1 every release). Each release is a git tag `vX.Y.Z` with a signed APK attached on GitHub Releases. To publish one:
+
+1. Bump both values in `gradle.properties` and add a `## X.Y.Z` section to `CHANGELOG.md`. Commit and push.
+2. Run `bash tools/release.sh`. It runs the tests, builds and signs the APK, tags, pushes, and creates the GitHub release with the changelog section as notes.
+
+Signing uses `keystore.properties` in the project root, which git ignores:
+```properties
+storeFile=C:/path/to/gatedelay-release.jks
+storePassword=...
+keyAlias=gatedelay
+keyPassword=...
+```
+**Back up the keystore and its passwords.** If they are lost, users can't update. They'd have to uninstall and link again. Without `keystore.properties`, `assembleRelease` builds an unsigned APK.
 
 **Tech:** Kotlin 2.2, Compose Multiplatform 1.9, Ktor 3, kotlinx.serialization/coroutines, Jetpack Glance (widgets), ZXing (QR). Gradle 8.13, AGP 8.12, JDK 17+.
 

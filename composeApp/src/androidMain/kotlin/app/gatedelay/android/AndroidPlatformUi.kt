@@ -17,6 +17,9 @@ import java.io.File
 
 class AndroidPlatformUi(private val context: Context) : PlatformUi {
 
+    override val appVersion: String =
+        runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull() ?: "?"
+
     override fun qrImage(payload: String, sizePx: Int): ImageBitmap = qrBitmap(payload, sizePx).asImageBitmap()
 
     override fun shareQr(payload: String) {

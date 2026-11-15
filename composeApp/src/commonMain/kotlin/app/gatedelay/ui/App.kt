@@ -25,6 +25,8 @@ interface PlatformUi {
     fun qrImage(payload: String, sizePx: Int): ImageBitmap
     /** Shares the QR as an image so it can be shown on another screen. */
     fun shareQr(payload: String)
+    /** Installed app version, e.g. "1.0.0". */
+    val appVersion: String
 }
 
 /** Everything the UI needs. Built once per process by the platform (see Android `AppGraph`). */
