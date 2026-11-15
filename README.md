@@ -23,6 +23,8 @@ The gates, their order and the waiting times are all configurable.
   <em>Home-screen widgets: one tap runs the whole sequence</em>
 </p>
 
+> 🇮🇱 **מדריך התקנה בעברית:** [GateDelay_Installation_Guide_HE.pdf](docs/GateDelay_Installation_Guide_HE.pdf)
+
 > **⚠️ Unofficial.** GateDelay isn't made by or affiliated with PAL Electronics Systems. It uses the same private PalGate API as the [ha-palgate](https://github.com/doron1/ha-palgate) Home Assistant integration. PalGate may change that API at any time. Use at your own risk.
 
 ---
@@ -142,6 +144,8 @@ Notes:
 
 ### 3. Choose your gates
 
+<img src="docs/screenshots/gates.png" width="260" align="right" alt="Gates section (example names)">
+
 In **Settings → Gates** there are three slots: **Main**, **Entry** and **Exit**.
 
 1. Tap **Choose** next to a slot. A list shows every gate your linked accounts can open, with name, address and which account it goes through. A controller with two outputs (e.g. entry and exit on one device) shows each output separately, marked *"(output 2)"*.
@@ -150,7 +154,11 @@ In **Settings → Gates** there are three slots: **Main**, **Entry** and **Exit*
 
 Repeat for all three slots. Tap **Refresh** if the list is empty or outdated.
 
+<br clear="right">
+
 ### 4. Check the sequences
+
+<img src="docs/screenshots/sequences-full.png" width="240" align="right" alt="Sequences section">
 
 In **Settings → Sequences**, each sequence has *First open → Then wait (seconds) → Then open*. The defaults are:
 
@@ -159,6 +167,8 @@ In **Settings → Sequences**, each sequence has *First open → Then wait (seco
 
 Change the gates or seconds to match your building. Changes save immediately.
 
+<br clear="right">
+
 ### 5. Add the widgets (optional, recommended)
 
 1. Long-press an empty spot on your home screen → **Widgets** → **GateDelay**.
@@ -166,6 +176,10 @@ Change the gates or seconds to match your building. Changes save immediately.
 3. Resize them as you like. Each widget is one big button.
 
 <img src="docs/screenshots/widgets.png" width="300" alt="ENTER and EXIT widgets on the home screen">
+&nbsp;
+<img src="docs/screenshots/widgets-countdown.png" width="160" alt="ENTER widget counting down to the second gate">
+
+While a sequence runs, the widget shows its progress, e.g. *"Entry in 6s"*.
 
 You can also long-press the GateDelay app icon for **ENTER / EXIT / Open Main gate** shortcuts, and drag those to the home screen too.
 
