@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">GateDelay</string>
-    <string name="widget_name">GateDelay</string>
-    <string name="widget_description">ENTER / EXIT gate sequences</string>
+    <string name="widget_enter_name">GateDelay ENTER</string>
+    <string name="widget_enter_description">One tap: Main gate, wait, Entry gate</string>
+    <string name="widget_exit_name">GateDelay EXIT</string>
+    <string name="widget_exit_description">One tap: Exit gate, wait, Main gate</string>
     <string name="shortcut_enter">ENTER</string>
     <string name="shortcut_exit">EXIT</string>
     <string name="shortcut_main">Open Main gate</string>

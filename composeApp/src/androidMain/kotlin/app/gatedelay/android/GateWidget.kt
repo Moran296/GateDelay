@@ -7,10 +7,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.glance.Button
-import androidx.glance.ButtonDefaults
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.LocalContext
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
@@ -23,95 +23,83 @@ import androidx.glance.color.ColorProvider
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Column
-import androidx.glance.layout.Row
-import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.fillMaxWidth
-import androidx.glance.layout.height
 import androidx.glance.layout.padding
-import androidx.glance.layout.width
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
+import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider as FixedColor
-import app.gatedelay.model.GateRole
 import app.gatedelay.model.SequenceKind
-import androidx.glance.LocalContext
 
-/** Home-screen widget: big ENTER / EXIT buttons, small single-gate buttons and a status line. */
-class GateWidget : GlanceAppWidget() {
+/**
+ * One big home-screen button per sequence: [EnterWidget] (blue) and [ExitWidget] (orange).
+ * Tapping anywhere starts the sequence in [SequenceService]; a small status line shows progress.
+ */
+abstract class SequenceWidget(private val kind: SequenceKind) : GlanceAppWidget() {
     override val stateDefinition = PreferencesGlanceStateDefinition
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
-            val status = currentState<Preferences>()[STATUS] ?: "Ready"
-            WidgetContent(status)
+            WidgetButton(kind, currentState<Preferences>()[STATUS] ?: "")
         }
     }
 
     companion object {
         private val STATUS = stringPreferencesKey("status")
 
-        suspend fun pushStatus(context: Context, text: String) {
-            val ids = runCatching { GlanceAppWidgetManager(context).getGlanceIds(GateWidget::class.java) }.getOrNull() ?: return
+        /** Updates the status line of all placed widgets of [kind]. */
+        suspend fun pushStatus(context: Context, kind: SequenceKind, text: String) {
+            val widget = widgetFor(kind)
+            val ids = runCatching { GlanceAppWidgetManager(context).getGlanceIds(widget::class.java) }.getOrNull() ?: return
             for (id in ids) {
                 updateAppWidgetState(context, id) { it[STATUS] = text }
-                GateWidget().update(context, id)
+                widget.update(context, id)
             }
+        }
+
+        private fun widgetFor(kind: SequenceKind): SequenceWidget = when (kind) {
+            SequenceKind.ENTER -> EnterWidget()
+            SequenceKind.EXIT -> ExitWidget()
         }
     }
 }
 
-private val enterColor = ColorProvider(day = Color(0xFF1F5FBF), night = Color(0xFF7FB6FF))
-private val exitColor = ColorProvider(day = Color(0xFFB85C00), night = Color(0xFFFFB86B))
-private val smallColor = ColorProvider(day = Color(0xFFE3E8F0), night = Color(0xFF2E3440))
-private val bg = ColorProvider(day = Color(0xF2FFFFFF), night = Color(0xF21B1F24))
-private val fg = ColorProvider(day = Color(0xFF111111), night = Color(0xFFEEEEEE))
-private val onBig = FixedColor(Color.White)
+class EnterWidget : SequenceWidget(SequenceKind.ENTER)
+class ExitWidget : SequenceWidget(SequenceKind.EXIT)
+
+class EnterWidgetReceiver : GlanceAppWidgetReceiver() {
+    override val glanceAppWidget: GlanceAppWidget = EnterWidget()
+}
+
+class ExitWidgetReceiver : GlanceAppWidgetReceiver() {
+    override val glanceAppWidget: GlanceAppWidget = ExitWidget()
+}
+
+private val enterColor = ColorProvider(day = Color(0xFF1F5FBF), night = Color(0xFF2F6FD0))
+private val exitColor = ColorProvider(day = Color(0xFFD9730D), night = Color(0xFFC86A10))
+private val white = FixedColor(Color.White)
 
 @Composable
-private fun WidgetContent(status: String) {
+private fun WidgetButton(kind: SequenceKind, status: String) {
     val context = LocalContext.current
     Column(
-        GlanceModifier.fillMaxSize().background(bg).cornerRadius(20.dp).padding(10.dp),
+        GlanceModifier
+            .fillMaxSize()
+            .cornerRadius(24.dp)
+            .background(if (kind == SequenceKind.ENTER) enterColor else exitColor)
+            .clickable(actionStartService(SequenceService.startIntent(context, kind), isForegroundService = true))
+            .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(status, maxLines = 1, style = TextStyle(color = fg, fontSize = 13.sp))
-        Spacer(GlanceModifier.height(6.dp))
-        Row(GlanceModifier.fillMaxWidth().defaultWeight()) {
-            Button(
-                text = SequenceKind.ENTER.title,
-                onClick = actionStartService(SequenceService.startIntent(context, SequenceKind.ENTER), isForegroundService = true),
-                modifier = GlanceModifier.defaultWeight().fillMaxSize(),
-                colors = ButtonDefaults.buttonColors(backgroundColor = enterColor, contentColor = onBig),
-                style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-            )
-            Spacer(GlanceModifier.width(8.dp))
-            Button(
-                text = SequenceKind.EXIT.title,
-                onClick = actionStartService(SequenceService.startIntent(context, SequenceKind.EXIT), isForegroundService = true),
-                modifier = GlanceModifier.defaultWeight().fillMaxSize(),
-                colors = ButtonDefaults.buttonColors(backgroundColor = exitColor, contentColor = onBig),
-                style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-            )
-        }
-        Spacer(GlanceModifier.height(6.dp))
-        Row(GlanceModifier.fillMaxWidth()) {
-            GateRole.entries.forEachIndexed { i, role ->
-                if (i > 0) Spacer(GlanceModifier.width(6.dp))
-                Button(
-                    text = role.title,
-                    onClick = actionStartService(SequenceService.singleIntent(context, role), isForegroundService = true),
-                    modifier = GlanceModifier.defaultWeight().height(36.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = smallColor, contentColor = fg),
-                    style = TextStyle(fontSize = 12.sp),
-                )
-            }
+        Text(
+            kind.title,
+            style = TextStyle(color = white, fontSize = 28.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+        )
+        if (status.isNotEmpty()) {
+            Text(status, maxLines = 1, style = TextStyle(color = white, fontSize = 12.sp, textAlign = TextAlign.Center))
         }
     }
-}
-
-class GateWidgetReceiver : GlanceAppWidgetReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = GateWidget()
 }

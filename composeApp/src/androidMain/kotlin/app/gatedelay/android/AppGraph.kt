@@ -12,13 +12,14 @@ import app.gatedelay.model.SequenceKind
 import app.gatedelay.palgate.PalgateApi
 import app.gatedelay.sequence.GateController
 import app.gatedelay.sequence.SequenceRunner
-import app.gatedelay.sequence.SingleStatus
+import app.gatedelay.sequence.RunState
+import app.gatedelay.sequence.StepStatus
 import app.gatedelay.ui.AppDeps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class GateApp : Application() {
@@ -54,18 +55,24 @@ object AppGraph {
             linker.state.collect { if (it is LinkState.WaitingForScan) LinkService.start(app) }
         }
         linker.resumePending()
-        // Mirror progress to the home-screen widget.
+        // Mirror progress to the ENTER / EXIT home-screen widgets; clear the status a while after finishing.
         scope.launch {
-            combine(runner.state, runner.singles) { run, singles ->
-                val single = singles.entries.lastOrNull()?.let { (role, s) ->
-                    when (s.status) {
-                        SingleStatus.OPENING -> "Opening ${role.title}…"
-                        SingleStatus.DONE -> "${role.title} opened ✓"
-                        SingleStatus.FAILED -> "${role.title} failed: ${s.error}"
+            val last = mutableMapOf<SequenceKind, String>()
+            runner.state.collectLatest { run ->
+                for (kind in SequenceKind.entries) {
+                    val text = widgetStatus(run, kind)
+                    if (last[kind] != text) {
+                        last[kind] = text
+                        SequenceWidget.pushStatus(app, kind, text)
                     }
                 }
-                if (run.running || single == null) run.summary() else single
-            }.distinctUntilChanged().collect { GateWidget.pushStatus(app, it) }
+                val kind = run.kind
+                if (!run.running && kind != null) {
+                    delay(15_000)
+                    last[kind] = ""
+                    SequenceWidget.pushStatus(app, kind, "")
+                }
+            }
         }
     }
 }
@@ -80,4 +87,18 @@ class ServiceGateController(private val context: Context, private val runner: Se
     override fun cancel() = runner.cancel()
 
     private fun send(intent: Intent) = ContextCompat.startForegroundService(context, intent)
+}
+
+/** Short status line for the widget of [kind]. */
+private fun widgetStatus(run: RunState, kind: SequenceKind): String {
+    if (run.kind != kind) return ""
+    val opening = run.steps.firstOrNull { it.status == StepStatus.OPENING }
+    return when {
+        run.running && run.secondsLeft != null -> "${run.steps.getOrNull(1)?.role?.title} in ${run.secondsLeft}s"
+        run.running -> "Opening ${opening?.role?.title ?: ""}…"
+        run.steps.isEmpty() && run.error != null -> "Set up in app"
+        run.error != null -> "Failed - open app"
+        run.finishedOk -> "Done ✓"
+        else -> "Cancelled"
+    }
 }

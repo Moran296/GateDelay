@@ -47,7 +47,7 @@ $env:JAVA_HOME = "C:\Program Files\Android\Android Studio1\jbr"
 
 ## 3. Widget & shortcuts
 
-- **Widget:** long-press the home screen → *Widgets* → **GateDelay** → drag it out. It has big **ENTER** / **EXIT** buttons, small **Main / Entry / Exit** buttons and a status line ("EXIT: opening Main in 12s"). Sequences run in the background, so you don't need to open the app.
+- **Widgets:** long-press the home screen → *Widgets* → **GateDelay**. There are two: **GateDelay ENTER** (blue) and **GateDelay EXIT** (orange). Add both. Each is a single big button you can resize, and a small status line shows progress ("Main in 12s", "Done ✓"). The sequence runs in the background, so you don't need to open the app.
 - **Shortcuts:** long-press the GateDelay icon → ENTER / EXIT / Open Main gate. You can drag these to the home screen too.
 - While a sequence runs, a notification shows progress with a **Cancel** button.
 

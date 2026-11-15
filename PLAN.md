@@ -13,7 +13,7 @@ The integration is a Kotlin port of the protocol used by [doron1/ha-palgate](htt
 ## Status (2026-11-15)
 - ✅ Phase 0: token generator ported to Kotlin and verified against 6 pylgate vectors. Project scaffolded (Kotlin 2.2.10, AGP 8.12.1, Compose Multiplatform 1.9.3).
 - ✅ Phase 1 (Android): linking (QR + share + manual import), gate picker, sequences, foreground service, Keystore token storage. Installed and launched on a Galaxy S22 (Android 16). Linking and real gate opening are **not yet tested with a real account**.
-- ✅ Phase 2 (Android part): Glance home-screen widget (ENTER/EXIT + single gates + status) and launcher shortcuts.
+- ✅ Phase 2 (Android part): two Glance home-screen widgets (ENTER blue, EXIT orange, with status line) and launcher shortcuts.
 - ⏳ Next: test linking and opening on real gates, and confirm multi-output gate fields from `/devices`.
 - ⏳ iOS (needs a Mac): add iOS targets, `iosApp` host, Keychain store, WidgetKit/App Intents.
 

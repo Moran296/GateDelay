@@ -46,13 +46,23 @@
             android:foregroundServiceType="dataSync" />
 
         <receiver
-            android:name="app.gatedelay.android.GateWidgetReceiver"
+            android:name="app.gatedelay.android.EnterWidgetReceiver"
             android:exported="true"
-            android:label="@string/widget_name">
+            android:label="@string/widget_enter_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/gate_widget_info" />
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_enter_info" />
+        </receiver>
+
+        <receiver
+            android:name="app.gatedelay.android.ExitWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_exit_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_exit_info" />
         </receiver>
 
         <provider
