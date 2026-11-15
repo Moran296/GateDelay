@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.core.content.ContextCompat
 import app.gatedelay.data.DeviceLinker
 import app.gatedelay.data.GateRepository
+import app.gatedelay.data.LinkState
 import app.gatedelay.model.GateRole
 import app.gatedelay.model.SequenceKind
 import app.gatedelay.palgate.PalgateApi
@@ -37,14 +38,22 @@ object AppGraph {
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     fun init(app: Context) {
-        val repo = GateRepository(PrefsKeyValueStore(app), KeystoreSecretStore(app), PalgateApi())
+        val kv = PrefsKeyValueStore(app)
+        val repo = GateRepository(kv, KeystoreSecretStore(app), PalgateApi())
         runner = SequenceRunner(repo, scope)
+        val linker = DeviceLinker(repo, scope, kv)
         deps = AppDeps(
             repo = repo,
             controller = ServiceGateController(app, runner),
-            linker = DeviceLinker(repo, scope),
+            linker = linker,
             platform = AndroidPlatformUi(app),
         )
+        // While waiting for the PalGate scan, hold a foreground service: otherwise Android blocks
+        // our network as soon as the user switches to the PalGate app, and the token is lost.
+        scope.launch {
+            linker.state.collect { if (it is LinkState.WaitingForScan) LinkService.start(app) }
+        }
+        linker.resumePending()
         // Mirror progress to the home-screen widget.
         scope.launch {
             combine(runner.state, runner.singles) { run, singles ->
