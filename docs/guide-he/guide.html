@@ -28,111 +28,59 @@
 <h1>GateDelay – מדריך התקנה והגדרה</h1>
 <p class="sub">פתיחה מדורגת של שערי החניון באמצעות <span class="en">PalGate</span> | <span class="en">Android</span></p>
 
-<h2>0. לפני שמתחילים</h2>
+<h2>1. התקנה</h2>
 <ol>
-  <li>מנהל השער צריך לאשר לכם <b>מכשיר מקושר</b>:<br><span class="en path">Gate Settings → Manager Options → Users → Linked Device</span></li>
-  <li>בחשבון <span class="en">PalGate</span> שלכם צריך להיות מקום פנוי למכשיר מקושר (בדרך כלל עד 2). <span class="en">GateDelay</span> תופסת מקום אחד.</li>
-  <li>לקישור החשבון תצטרכו מסך נוסף (מחשב, טאבלט או טלפון אחר) כדי להציג עליו קוד <span class="en">QR</span>.</li>
-</ol>
-
-<h2>1. התקנת האפליקציה</h2>
-<ol>
-  <li>הורידו את הקובץ <span class="en">GateDelay-X.Y.Z.apk</span> מדף הגרסאות:<br>
-      <a class="en" href="https://github.com/Moran296/GateDelay/releases/latest">github.com/Moran296/GateDelay/releases/latest</a><br>
-      אפשר גם לקבל את הקובץ ממי שכבר מתקין אותו, אבל רק ממקור שאתם סומכים עליו.</li>
-  <li>פתחו את הקובץ בטלפון ואשרו <b>התקנה ממקור לא ידוע</b>.</li>
-  <li>אם <span class="en">Play Protect</span> מציג אזהרה, זה רגיל לאפליקציה שלא הותקנה מחנות <span class="en">Play</span>. בחרו <b>התקן בכל זאת</b>.</li>
-  <li><b>עדכון:</b> מתקינים את הגרסה החדשה מעל הקיימת. החשבון וההגדרות נשמרים ואין צורך לקשר מחדש. הגרסה המותקנת מופיעה בתחתית מסך ההגדרות.</li>
+  <li>פתחו את קובץ <span class="en">GateDelay.apk</span> בטלפון ואשרו התקנה ממקור חיצוני.</li>
+  <li>לחצו התקנה ופתחו את <span class="en">GateDelay</span>.</li>
 </ol>
 
 <h2>2. קישור חשבון <span class="en">PalGate</span></h2>
 <ol>
-  <li>ב־<span class="en">GateDelay</span> פתחו את ההגדרות (⚙) ולחצו <span class="ui">Link account</span>.</li>
-  <li>לחצו <span class="ui">Show on another screen (share QR)</span>, ושלחו את התמונה למחשב או לטלפון נוסף כדי להציג אותה שם.</li>
-  <li>בטלפון שלכם פתחו את <span class="en">PalGate</span>: <b>הגדרות ← יחידות מקושרות ← קישור יחידה</b>.</li>
-  <li>סרקו את הקוד מהמסך השני. חזרו ל־<span class="en">GateDelay</span> והמתינו עד שהחשבון יופיע ברשימה.</li>
-  <li>אחרי הקישור מחקו את תמונת הקוד. <b>הקוד פרטי:</b> מי שסורק אותו לפני כן יכול לקבל גישה לחשבון.</li>
+  <li>ב־<span class="en">GateDelay</span> פתחו הגדרות ולחצו <span class="ui">Link account</span>.</li>
+  <li>לחצו <span class="ui">Show on another screen (share QR)</span> והציגו את הקוד במחשב או בטלפון נוסף.</li>
+  <li>בטלפון שלכם פתחו <span class="en">PalGate</span> ← הגדרות ← יחידות מקושרות ← קישור יחידה.</li>
+  <li>סרקו את הקוד וחזרו ל־<span class="en">GateDelay</span> עד שהקישור יושלם.</li>
 </ol>
-<div class="note">אם הקישור נכשל, מחקו ב־<span class="en">PalGate</span> את הקישור החדש שנוצר כדי לפנות את המקום, ונסו שוב.</div>
 
-<h2>3. בחירת השערים</h2>
+<h2>3. בחירת שערים ורצף</h2>
 <div class="shot">
-  <img src="../screenshots/gates.png" width="230" alt="">
+  <img src="../screenshots/gates.png" width="200" alt="">
   <div class="txt">
     <ol>
-      <li>בהגדרות, תחת <span class="ui">Gates</span>, לחצו <span class="ui">Choose</span> ליד כל שער ובחרו אותו מהרשימה:
-        <ul>
-          <li><span class="ui">Main</span>: השער החיצוני (המחסום).</li>
-          <li><span class="ui">Entry</span>: שער הכניסה הפנימי.</li>
-          <li><span class="ui">Exit</span>: שער היציאה הפנימי.</li>
-        </ul></li>
-      <li>לחצו <span class="ui">Test</span> ליד כל שער וודאו שהשער הנכון נפתח.</li>
-      <li>אם השערים לא מופיעים ברשימה, לחצו <span class="ui">Refresh</span>.</li>
+      <li>תחת <span class="ui">Gates</span> לחצו <span class="ui">Choose</span> ובחרו את השערים <span class="ui">Main</span>, <span class="ui">Entry</span> ו־<span class="ui">Exit</span>.</li>
+      <li>לחצו <span class="ui">Test</span> כדי לוודא שנפתח השער הנכון.</li>
+    </ol>
+  </div>
+</div>
+<div class="shot">
+  <img src="../screenshots/sequences-full.png" width="200" alt="">
+  <div class="txt">
+    <ol start="3">
+      <li>תחת <span class="ui">Sequences</span> בחרו שער ראשון, זמן המתנה ושער שני.</li>
+      <li>כניסה: <span class="ui">Main</span> ← 10 שניות ← <span class="ui">Entry</span>.</li>
+      <li>יציאה: <span class="ui">Exit</span> ← 27 שניות ← <span class="ui">Main</span>.</li>
     </ol>
   </div>
 </div>
 
-<h2>4. הגדרת רצף השערים</h2>
+<h2>4. כפתורים במסך הבית</h2>
 <div class="shot">
-  <img src="../screenshots/sequences-full.png" width="230" alt="">
+  <img src="../screenshots/widgets-countdown.png" width="130" alt="">
   <div class="txt">
     <ol>
-      <li>תחת <span class="ui">Sequences</span> בחרו לכל רצף את השער הראשון (<span class="ui">First open</span>), את זמן ההמתנה בשניות (<span class="ui">Then wait</span>) ואת השער השני (<span class="ui">Then open</span>).</li>
-      <li><b>כניסה (<span class="en">ENTER</span>):</b> <span class="ui">Main</span> ← 10 שניות ← <span class="ui">Entry</span>.</li>
-      <li><b>יציאה (<span class="en">EXIT</span>):</b> <span class="ui">Exit</span> ← 27 שניות ← <span class="ui">Main</span>.</li>
-      <li>התאימו את זמני ההמתנה למרחק בין השערים ולזמן הנסיעה ביניהם.</li>
+      <li>לחיצה ארוכה על מסך הבית ← וידג'טים ← <span class="en">GateDelay</span>.</li>
+      <li>הוסיפו את <b>ENTER</b> (כחול) ואת <b>EXIT</b> (כתום).</li>
     </ol>
   </div>
 </div>
 
-<h2>5. כפתורים במסך הבית (וידג'טים)</h2>
-<div class="shot">
-  <img src="../screenshots/widgets-countdown.png" width="150" alt="">
-  <div class="txt">
-    <ol>
-      <li>לחצו לחיצה ארוכה על מסך הבית ← <b>וידג'טים</b> ← <span class="en">GateDelay</span>.</li>
-      <li>גררו למסך את <b>ENTER</b> (כחול) ואת <b>EXIT</b> (כתום).</li>
-      <li>לחיצה על וידג'ט מפעילה את הרצף בלי לפתוח את האפליקציה. מתחת לשם מופיע המצב, למשל ספירה לאחור עד השער השני.</li>
-      <li>אפשר גם ללחוץ לחיצה ארוכה על סמל האפליקציה ולבחור <span class="en">ENTER</span>, <span class="en">EXIT</span> או פתיחה של שער בודד.</li>
-    </ol>
-  </div>
-</div>
-
-<h2>6. שימוש יומיומי</h2>
+<h2>5. פתרון תקלות</h2>
 <ol>
-  <li>במסך הראשי לחצו <b>ENTER</b> או <b>EXIT</b>. השער הראשון נפתח, ואחרי ספירה לאחור נפתח השער השני.</li>
-  <li><span class="ui">Open now</span> פותח את השער השני מיד, ו־<span class="ui">Cancel</span> מבטל את הרצף. אותם כפתורים מופיעים גם בהתראה.</li>
-  <li>הרצף ממשיך לרוץ גם כשהמסך כבוי או כשעוברים לאפליקציה אחרת.</li>
-  <li>הכפתורים הקטנים <span class="ui">Main</span>, <span class="ui">Entry</span> ו־<span class="ui">Exit</span> פותחים שער אחד בלבד.</li>
-  <li>אם השער הראשון לא נפתח, השער השני <b>לא</b> ייפתח.</li>
+  <li>הקישור נכשל: בדקו חיבור לאינטרנט ונסו עם קוד <span class="en">QR</span> חדש.</li>
+  <li>השער השני לא נפתח: בדקו את סדר השערים ואת החיבור לאינטרנט.</li>
 </ol>
 
-<h2>7. הגדרות מומלצות בסמסונג</h2>
-<ol>
-  <li><b>הגדרות ← חיבורים ← <span class="en">Wi-Fi</span> ← <span class="en">Intelligent Wi-Fi</span></b>: הפעילו "עבור לנתונים ניידים".</li>
-  <li><b>הגדרות ← יישומים ← <span class="en">GateDelay</span> ← סוללה</b>: בחרו "ללא הגבלה".</li>
-  <li>אופציונלי: <b>אפשרויות למפתחים ← <span class="en">Mobile data always active</span></b>. זה יכול לקצר את העיכוב במעבר בין רשתות, אבל עלול לצרוך יותר סוללה.</li>
-</ol>
-
-<h2>8. בדיקת תקינות</h2>
-<ol>
-  <li>ודאו שכל אחד מהשערים נפתח בנפרד באמצעות <span class="en">PalGate</span>.</li>
-  <li>ודאו שהחשבון מופיע ב־<span class="en">GateDelay</span> ושלחיצה על <span class="ui">Test</span> פותחת את השער הנכון.</li>
-  <li>בדקו את הרצף בפעם הראשונה כשהרכב עומד במקום בטוח.</li>
-  <li>בדקו גם עם חיבור סלולרי בלבד ועם מסך כבוי.</li>
-</ol>
-
-<h2>9. פתרון תקלות</h2>
-<ol>
-  <li><b>הקישור נכשל:</b> בדקו את החיבור לאינטרנט, ושמנהל השער אישר לכם מכשיר מקושר (שלב 0). צרו קוד <span class="en">QR</span> חדש ונסו שוב.</li>
-  <li><b>מופיעה ההודעה "Linked Device" או "not authorized":</b> מנהל השער לא אישר לכם מכשיר מקושר באותו שער.</li>
-  <li><b>אין קליטה בין השערים:</b> האפליקציה מנסה שוב כל 2 שניות במשך עד 60 שניות, ומציגה "retrying". אם זה קורה הרבה, ראו שלב 7.</li>
-  <li><b>השער השני מתעכב:</b> בדקו את המעבר בין <span class="en">Wi-Fi</span> לסלולר, את הגבלות הסוללה ואת זמן ההמתנה.</li>
-  <li><b>השער השני לא נפתח:</b> בדקו את סדר השערים ברצף, את ההרשאות ואת החיבור לאינטרנט.</li>
-</ol>
-
-<div class="warn"><b>הערת אבטחה:</b> <span class="en">GateDelay</span> אינה אפליקציה רשמית של <span class="en">PalGate</span>. התקינו אותה רק ממקור שאתם סומכים עליו, ואל תשתפו את קוד הקישור עם אחרים. פרטי הגישה נשמרים מוצפנים בטלפון בלבד.</div>
-<p>קוד מקור: <a class="en" href="https://github.com/Moran296/GateDelay">https://github.com/Moran296/GateDelay</a></p>
+<p class="warn"><b>הערה:</b> <span class="en">GateDelay</span> אינה אפליקציה רשמית של <span class="en">PalGate</span>. קוד מקור: <a class="en" href="https://github.com/Moran296/GateDelay">github.com/Moran296/GateDelay</a></p>
 
 </body>
 </html>
