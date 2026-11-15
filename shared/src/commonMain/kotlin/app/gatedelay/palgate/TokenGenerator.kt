@@ -1,3 +1,9 @@
+/*
+ * GateDelay - Kotlin port of pylgate's PalGate token derivation (https://github.com/DonutByte/pylgate).
+ * Original work by DonutByte, licensed under GPL-3.0. This port is also licensed under GPL-3.0:
+ * you can redistribute it and/or modify it under the terms of the GNU General Public License v3
+ * or (at your option) any later version. See the LICENSE file.
+ */
 package app.gatedelay.palgate
 
 /** Token types as returned by PalGate device linking (`secondary` field). */
