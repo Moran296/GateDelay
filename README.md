@@ -18,6 +18,10 @@ The gates, their order and the waiting times are all configurable.
   &nbsp;
   <img src="docs/screenshots/sequences.png" width="240" alt="Settings - sequences">
 </p>
+<p align="center">
+  <img src="docs/screenshots/widgets.png" width="300" alt="ENTER and EXIT home-screen widgets"><br>
+  <em>Home-screen widgets: one tap runs the whole sequence</em>
+</p>
 
 > **⚠️ Unofficial.** GateDelay isn't made by or affiliated with PAL Electronics Systems. It uses the same private PalGate API as the [ha-palgate](https://github.com/doron1/ha-palgate) Home Assistant integration. PalGate may change that API at any time. Use at your own risk.
 
@@ -152,6 +156,8 @@ Change the gates or seconds to match your building. Changes save immediately.
 1. Long-press an empty spot on your home screen → **Widgets** → **GateDelay**.
 2. Drag **GateDelay ENTER** (blue) and **GateDelay EXIT** (orange) onto the home screen.
 3. Resize them as you like. Each widget is one big button.
+
+<img src="docs/screenshots/widgets.png" width="300" alt="ENTER and EXIT widgets on the home screen">
 
 You can also long-press the GateDelay app icon for **ENTER / EXIT / Open Main gate** shortcuts, and drag those to the home screen too.
 
